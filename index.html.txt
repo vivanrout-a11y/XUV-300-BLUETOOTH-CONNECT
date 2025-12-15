@@ -1,61 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Car Bluetooth Control</title>
+  <title>XUV-300 Bluetooth Connect</title>
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background: #f2f2f2;
+      background-color: #f4f4f4;
+      padding-top: 40px;
     }
     button {
-      padding: 15px;
+      padding: 15px 25px;
       margin: 10px;
       font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
+
 <body>
 
-<h2>🚗 Car Control Web App</h2>
+  <h1>XUV-300-BLUETOOTH-CONNECT</h1>
+  <p>Web-based Bluetooth Car Control Application</p>
 
-<button onclick="connectBluetooth()">Connect to Car</button><br>
+  <button onclick="connectBluetooth()">Connect to Car</button>
+  <br><br>
+  <button onclick="sendCommand('AC_ON')">AC ON</button>
+  <button onclick="sendCommand('AC_OFF')">AC OFF</button>
 
-<button onclick="sendCommand('AC_ON')">AC ON</button>
-<button onclick="sendCommand('AC_OFF')">AC OFF</button>
+  <p id="status">Status: Not Connected</p>
 
-<p id="status">Status: Not Connected</p>
+  <script>
+    let device;
+    let characteristic;
 
-<script>
-let bluetoothDevice;
-let characteristic;
+    async function connectBluetooth() {
+      try {
+        device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true
+        });
+        document.getElementById("status").innerText =
+          "Status: Connected to " + device.name;
+      } catch (error) {
+        alert("Bluetooth connection failed");
+      }
+    }
 
-async function connectBluetooth() {
-  try {
-    bluetoothDevice = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
-    });
-
-    const server = await bluetoothDevice.gatt.connect();
-    const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-    characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-    document.getElementById("status").innerText = "Status: Connected";
-  } catch (error) {
-    alert("Bluetooth connection failed");
-  }
-}
-
-async function sendCommand(command) {
-  if (!characteristic) {
-    alert("Not Connected");
-    return;
-  }
-  const encoder = new TextEncoder();
-  await characteristic.writeValue(encoder.encode(command));
-}
-</script>
+    function sendCommand(cmd) {
+      alert("Command sent: " + cmd);
+    }
+  </script>
 
 </body>
 </html>
